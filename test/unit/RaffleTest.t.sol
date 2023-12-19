@@ -38,7 +38,8 @@ contract RaffleTest is Test {
             gasLane,
             subscriptionId,
             callbackGasLimit,
-            linkToken
+            linkToken,
+
         ) = config.activeNetworkConfig();
 
         vm.deal(PLAYER, STARTING_USER_BALANCE);
@@ -48,10 +49,26 @@ contract RaffleTest is Test {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
     }
 
+    modifier raffleEnteredAndTimePassed() {
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: entranceFee}();
+
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number + 1);
+        _;
+    }
+
+    modifier skipFork() {
+        if (block.chainid != 31337) {
+            return;
+        }
+        _;
+    }
+
     ////////////////////
     //  enterRaffle   //
     ////////////////////
-    function testRaffleRevertsWhenYouDontPayEnough() public {
+    function testRaffleRevertsWhenYouDontPayEnough() public skipFork {
         // Arrange
         vm.prank(PLAYER);
         // Act / Assert
@@ -159,22 +176,6 @@ contract RaffleTest is Test {
     /////////////////////////
     // performUpkeep       //
     /////////////////////////
-
-    modifier raffleEnteredAndTimePassed() {
-        vm.prank(PLAYER);
-        raffle.enterRaffle{value: entranceFee}();
-
-        vm.warp(block.timestamp + interval + 1);
-        vm.roll(block.number + 1);
-        _;
-    }
-
-    modifier skipFork() {
-        if (block.chainid != 31337) {
-            return;
-        }
-        _;
-    }
 
     function testPerformUpkeepCanOnlyRunIfCheckUpkeepIsTrue()
         public

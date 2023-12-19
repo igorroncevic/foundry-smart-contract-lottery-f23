@@ -15,8 +15,12 @@ contract HelperConfig is Script {
         uint64 subscriptionId;
         uint32 callbackGasLimit;
         address linkToken;
+        uint256 deployerKey;
     }
     NetworkConfig public activeNetworkConfig;
+
+    uint256 public DEFAULT_ANVIL_PRIVATE_KEY =
+        0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
 
     constructor() {
         if (block.chainid == 11155111) {
@@ -35,9 +39,10 @@ contract HelperConfig is Script {
                 interval: 30,
                 vrfCoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
                 gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-                subscriptionId: 7909,
+                subscriptionId: 7953,
                 callbackGasLimit: 500000, // 500,000 gas
-                linkToken: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB
+                linkToken: 0x326C977E6efc84E512bB9C30f76E30c160eD06FB,
+                deployerKey: vm.envUint("PRIVATE_KEY")
             });
     }
 
@@ -66,7 +71,8 @@ contract HelperConfig is Script {
                 gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
                 subscriptionId: 0, // TODO: Update
                 callbackGasLimit: 500000, // 500,000 gas
-                linkToken: address(linkToken)
+                linkToken: address(linkToken),
+                deployerKey: DEFAULT_ANVIL_PRIVATE_KEY
             });
     }
 }
